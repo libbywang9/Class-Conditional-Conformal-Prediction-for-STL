@@ -1,0 +1,48 @@
+# All hyperparameters of the naval demo. Paths are relative to this file's folder.
+seed: 42
+
+data:
+  path: data/naval_class.pkl          # see data/README.md
+  split_ratios: [0.60, 0.15, 0.125, 0.125]   # train / val / cal / test, stratified per class
+
+pretrained_stage1: pretrained/naval_stage1.pkl
+
+model:
+  fn_per: 20                          # predicates per code bit (half eventually, half always)
+  f_conj: 8                           # conjunction branches per code bit
+  sparsemax:
+    predicate: 2.5
+    conjunction: 2.0
+    disjunction: 1.2
+
+stage1:
+  delta: 0.1                          # min-margin reward weight
+  rank_margin: 0.30                   # decoding rank-loss margin
+  lr_Wc: 0.01
+  lr_b: 0.03
+  lr_t: 0.03                          # time bounds t1, t2
+  batch_per_class: 10
+  max_epochs: 5000
+  eval_every: 10
+  early_stop_evals: 50                # evaluations without a new best validation accuracy
+
+stage2:
+  beta: 20                            # tightness sharpness
+  eta_tight: 1.0
+  eta_sign: 20
+  gamma: 0.01                         # sign margin
+  eta_rank: 2.0
+  rank_margin: 0.20
+  eta_anchor: 0.1
+  lr: 0.005                           # Adam, thresholds b only
+  batch_per_class: 10
+  epochs: 2000                        # fixed, no early stopping
+  eval_every: 10
+  acc_tolerance: 0.02                 # gate: val_correct >= Stage 1 val_correct - round(0.02 * n_val)
+  r_band: 0.005                       # band above the lowest val mean R over satisfied positives
+
+conformal:
+  alpha: 0.1
+
+formulas:
+  active_share: 0.05                  # branch shown if it is the arg-max branch for > 5% of the class
